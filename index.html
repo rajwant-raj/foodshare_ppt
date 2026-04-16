@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodShare – Smart Food Redistribution System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --blue: #6C8EFF;
+  --purple: #A78BFA;
+  --pink: #F0ABFC;
+  --green: #6EE7B7;
+  --orange: #FDBA74;
+  --red: #FCA5A5;
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 8px 32px rgba(108, 142, 255, 0.1);
+  --text-dark: #1E1B4B;
+  --text-mid: #4338CA;
+  --text-light: #6B7280;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: #F0F0FF;
+}
+
+.presentation {
+  width: 100vw; height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 40px 60px;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.slide.morph-out-left .slide-content {
+  animation: morphOutLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide.morph-out-right .slide-content {
+  animation: morphOutRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide.morph-in .slide-content {
+  animation: morphIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes morphOutLeft {
+  0% { transform: scale(1) translateX(0); opacity: 1; }
+  100% { transform: scale(0.92) translateX(-80px); opacity: 0; }
+}
+@keyframes morphOutRight {
+  0% { transform: scale(1) translateX(0); opacity: 1; }
+  100% { transform: scale(0.92) translateX(80px); opacity: 0; }
+}
+@keyframes morphIn {
+  0% { transform: scale(1.08) translateY(20px); opacity: 0; filter: blur(4px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+}
+
+.slide-content {
+  width: 100%; max-width: 1200px;
+  position: relative; z-index: 2;
+}
+
+/* Backgrounds */
+.bg-mesh {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(108, 142, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(167, 139, 250, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(240, 171, 252, 0.08) 0%, transparent 60%),
+    linear-gradient(135deg, #FAFAFF 0%, #F0EEFF 50%, #FAFAFF 100%);
+}
+
+.bg-mesh-2 {
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(108, 142, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(110, 231, 183, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, #F8FAFF 0%, #F0EEFF 100%);
+}
+
+.bg-mesh-3 {
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(167, 139, 250, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(253, 186, 116, 0.12) 0%, transparent 50%),
+    linear-gradient(135deg, #FFFAF5 0%, #F5F0FF 100%);
+}
+
+/* Floating orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.orb-1 { width: 300px; height: 300px; background: var(--blue); top: -100px; right: -50px; animation-delay: 0s; }
+.orb-2 { width: 250px; height: 250px; background: var(--purple); bottom: -80px; left: -60px; animation-delay: -3s; }
+.orb-3 { width: 200px; height: 200px; background: var(--pink); top: 50%; left: 50%; animation-delay: -5s; }
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -30px) scale(1.05); }
+  66% { transform: translate(-15px, 20px) scale(0.95); }
+}
+
+/* Grid pattern */
+.grid-pattern {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(108, 142, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108, 142, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+/* Glass card */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-sm {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(108, 142, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(108, 142, 255, 0.12);
+}
+
+/* Typography */
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 3.5rem;
+  line-height: 1.1;
+  color: var(--text-dark);
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1.15;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--text-dark);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+p, li {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Icon boxes */
+.icon-box {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-box-blue { background: linear-gradient(135deg, rgba(108, 142, 255, 0.15), rgba(108, 142, 255, 0.05)); }
+.icon-box-purple { background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(167, 139, 250, 0.05)); }
+.icon-box-green { background: linear-gradient(135deg, rgba(110, 231, 183, 0.15), rgba(110, 231, 183, 0.05)); }
+.icon-box-orange { background: linear-gradient(135deg, rgba(253, 186, 116, 0.15), rgba(253, 186, 116, 0.05)); }
+.icon-box-red { background: linear-gradient(135deg, rgba(252, 165, 165, 0.15), rgba(252, 165, 165, 0.05)); }
+.icon-box-pink { background: linear-gradient(135deg, rgba(240, 171, 252, 0.15), rgba(240, 171, 252, 0.05)); }
+
+/* Stagger animations */
+.stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.slide.active .stagger > * {
+  animation: staggerIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide.active .stagger > *:nth-child(1) { animation-delay: 0.15s; }
+.slide.active .stagger > *:nth-child(2) { animation-delay: 0.25s; }
+.slide.active .stagger > *:nth-child(3) { animation-delay: 0.35s; }
+.slide.active .stagger > *:nth-child(4) { animation-delay: 0.45s; }
+.slide.active .stagger > *:nth-child(5) { animation-delay: 0.55s; }
+.slide.active .stagger > *:nth-child(6) { animation-delay: 0.65s; }
+
+@keyframes staggerIn {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulse dot */
+.pulse-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--green);
+  position: relative;
+}
+.pulse-dot::after {
+  content: '';
+  position: absolute; top: -4px; left: -4px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(110, 231, 183, 0.3);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Flow arrow */
+.flow-arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue);
+  font-size: 1.5rem;
+  opacity: 0.6;
+}
+
+/* Navigation */
+.nav-bar {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 60px;
+  box-shadow: 0 8px 32px rgba(108, 142, 255, 0.1);
+}
+
+.nav-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+.nav-btn:hover { transform: scale(1.1); box-shadow: 0 4px 16px rgba(108, 142, 255, 0.3); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.slide-counter {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  min-width: 50px;
+  text-align: center;
+}
+
+.progress-dots {
+  display: flex; gap: 5px;
+}
+.progress-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(108, 142, 255, 0.2);
+  transition: all 0.3s ease;
+}
+.progress-dot.active {
+  width: 24px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+}
+
+/* Slide number */
+.slide-number {
+  position: absolute;
+  top: 30px; right: 40px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--blue);
+  opacity: 0.5;
+  z-index: 5;
+}
+
+/* Special layouts */
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.three-col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.four-col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  min-width: 100px;
+}
+
+.flow-node .icon-box {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+}
+.flow-node span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+/* Table */
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+.comparison-table th {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(108, 142, 255, 0.1), rgba(167, 139, 250, 0.1));
+  color: var(--text-dark);
+  font-weight: 600;
+  text-align: left;
+  font-size: 0.85rem;
+}
+.comparison-table th:first-child { border-radius: 12px 0 0 0; }
+.comparison-table th:last-child { border-radius: 0 12px 0 0; }
+.comparison-table td {
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(108, 142, 255, 0.06);
+  color: var(--text-light);
+}
+.comparison-table tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+.comparison-table tr:last-child td:last-child { border-radius: 0 0 12px 0; }
+.comparison-table .highlight-row {
+  background: linear-gradient(135deg, rgba(108, 142, 255, 0.06), rgba(167, 139, 250, 0.06));
+}
+
+.check { color: var(--green); font-weight: 700; }
+.cross { color: var(--red); opacity: 0.5; }
+
+/* Tag */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.tag-blue { background: rgba(108, 142, 255, 0.1); color: var(--blue); }
+.tag-purple { background: rgba(167, 139, 250, 0.1); color: var(--purple); }
+.tag-green { background: rgba(110, 231, 183, 0.15); color: #059669; }
+.tag-orange { background: rgba(253, 186, 116, 0.15); color: #D97706; }
+
+/* Bullet */
+.bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+}
+.bullet-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+/* Step card */
+.step-card {
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+.step-num {
+  position: absolute;
+  top: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Hero specific */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--text-light);
+  font-weight: 400;
+  margin-bottom: 32px;
+  max-width: 540px;
+}
+
+.team-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(108, 142, 255, 0.1);
+}
+.team-info span {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Contrast card */
+.contrast-card {
+  padding: 32px;
+  border-radius: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.contrast-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0.08;
+}
+.contrast-waste {
+  background: linear-gradient(135deg, rgba(252, 165, 165, 0.1), rgba(253, 186, 116, 0.05));
+  border: 1px solid rgba(252, 165, 165, 0.2);
+}
+.contrast-need {
+  background: linear-gradient(135deg, rgba(108, 142, 255, 0.1), rgba(110, 231, 183, 0.05));
+  border: 1px solid rgba(108, 142, 255, 0.2);
+}
+.contrast-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  margin: 12px 0 8px;
+}
+
+/* Arch diagram */
+.arch-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.arch-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+.arch-box {
+  padding: 16px 24px;
+  border-radius: 14px;
+  text-align: center;
+  min-width: 130px;
+}
+.arch-box span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  display: block;
+}
+.arch-box small {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  margin-top: 2px;
+  display: block;
+}
+.arch-arrow-down {
+  color: var(--blue);
+  font-size: 1.3rem;
+  opacity: 0.5;
+}
+
+/* Reference card */
+.ref-card {
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.ref-card .ref-year {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Result stat */
+.stat-card {
+  padding: 24px;
+  text-align: center;
+}
+.stat-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+/* Thank you */
+.thank-you-title {
+  font-size: 5rem;
+  margin-bottom: 12px;
+}
+.thank-you-sub {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  font-weight: 400;
+}
+
+/* Keyboard hint */
+.key-hint {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: var(--text-light);
+  opacity: 0.4;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.key-hint kbd {
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.5);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slide { padding: 20px 24px; }
+  h1 { font-size: 2.2rem; }
+  h2 { font-size: 1.8rem; }
+  .hero-title { font-size: 2.5rem; }
+  .split-layout { grid-template-columns: 1fr; gap: 20px; }
+  .three-col { grid-template-columns: 1fr; }
+  .four-col { grid-template-columns: 1fr 1fr; }
+  .flow-row { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  .thank-you-title { font-size: 3rem; }
+  .team-info { flex-direction: column; gap: 8px; }
+  .contrast-number { font-size: 2.2rem; }
+  .nav-bar { bottom: 16px; padding: 8px 14px; gap: 8px; }
+  .key-hint { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="presentation" id="presentation">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide active" data-slide="0">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="grid-pattern"></div>
+    <span class="slide-number">01 / 14</span>
+    <div class="slide-content stagger">
+      <div class="hero-badge glass-sm">
+        <span class="pulse-dot"></span>
+        Community Project • 2026
+      </div>
+      <h1 class="hero-title">
+        <span class="gradient-text">FoodShare</span><br>
+        Smart Food Redistribution
+      </h1>
+      <p class="hero-sub">Connecting Surplus Food with Those in Need — powered by AI detection and intelligent NGO matching.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <span class="tag tag-blue"><span class="iconify" data-icon="mdi:brain" data-width="14"></span> AI-Powered</span>
+        <span class="tag tag-green"><span class="iconify" data-icon="mdi:hand-heart" data-width="14"></span> Social Impact</span>
+        <span class="tag tag-purple"><span class="iconify" data-icon="mdi:web" data-width="14"></span> Web Platform</span>
+      </div>
+      <div class="team-info" style="flex-direction: column; align-items: flex-start; gap: 16px;">
+        <span><span class="iconify" data-icon="mdi:account-group" data-width="16" style="vertical-align:-3px;color:var(--blue)"></span><b> Presented by:</b></span>
+        <div class="glass-sm" style="display: flex; gap: 20px; padding: 12px 20px; flex-wrap: wrap;">
+          <span><span class="iconify" data-icon="mdi:account" data-width="16" style="vertical-align:-3px;color:var(--blue)"></span> Rajwant Raj (63)</span>
+          <span><span class="iconify" data-icon="mdi:account" data-width="16" style="vertical-align:-3px;color:var(--blue)"></span> Rishi Rana (66)</span>
+          <span><span class="iconify" data-icon="mdi:account" data-width="16" style="vertical-align:-3px;color:var(--blue)"></span> Sandesh Kumar (71)</span>
+          <span><span class="iconify" data-icon="mdi:account" data-width="16" style="vertical-align:-3px;color:var(--blue)"></span> Himanshu Yadav (35)</span>
+
+        </div>
+        <span><span class="iconify" data-icon="mdi:school" data-width="16" style="vertical-align:-3px;color:var(--purple)"></span> Uttaranchal University ( B. Tech  2nd year CSE-1)</span>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Introduction -->
+  <div class="slide" data-slide="1">
+    <div class="bg-mesh-2"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <span class="slide-number">02 / 14</span>
+    <div class="slide-content stagger">
+      <div style="text-align:center;margin-bottom:36px;">
+        <span class="tag tag-orange" style="margin-bottom:12px;display:inline-flex;"><span class="iconify" data-icon="mdi:alert-circle" data-width="14"></span> The Reality</span>
+        <h2>The World Has a <span class="gradient-text-warm">Paradox</span></h2>
+      </div>
+      <div class="split-layout">
+        <div class="contrast-card contrast-waste">
+          <div class="icon-box icon-box-red" style="margin:0 auto;">
+            <span class="iconify" data-icon="mdi:trash-can-outline" data-width="28" style="color:var(--red)"></span>
+          </div>
+          <div class="contrast-number" style="color:#DC2626;">1.3B</div>
+          <h3 style="font-size:1.1rem;margin-bottom:6px;">Tons Wasted Yearly</h3>
+          <p style="font-size:0.85rem;">One-third of all food produced globally is never consumed</p>
+        </div>
+        <div class="contrast-card contrast-need">
+          <div class="icon-box icon-box-blue" style="margin:0 auto;">
+            <span class="iconify" data-icon="mdi:account-star-outline" data-width="28" style="color:var(--blue)"></span>
+          </div>
+          <div class="contrast-number" style="color:var(--blue);">828M</div>
+          <h3 style="font-size:1.1rem;margin-bottom:6px;">People Go Hungry</h3>
+          <p style="font-size:0.85rem;">Nearly 10% of the world population faces chronic hunger</p>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:28px;font-style:italic;color:var(--text-mid);font-weight:500;">
+        "The problem isn't production — it's distribution."
+      </p>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Motivation -->
+  <div class="slide" data-slide="2">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-3"></div>
+    <span class="slide-number">03 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:32px;">
+        <span class="tag tag-green" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:heart" data-width="14"></span> Why It Matters</span>
+        <h2>Our <span class="gradient-text">Motivation</span></h2>
+      </div>
+      <div class="four-col">
+        <div class="glass-sm" style="padding:24px;text-align:center;">
+          <div class="icon-box icon-box-red" style="margin:0 auto 12px;">
+            <span class="iconify" data-icon="mdi:food-apple-outline" data-width="26" style="color:#DC2626"></span>
+          </div>
+          <h3 style="font-size:0.95rem;margin-bottom:6px;">Massive Waste</h3>
+          <p style="font-size:0.8rem;">Restaurants & events discard edible food daily</p>
+        </div>
+        <div class="glass-sm" style="padding:24px;text-align:center;">
+          <div class="icon-box icon-box-orange" style="margin:0 auto 12px;">
+            <span class="iconify" data-icon="mdi:hand-back-right-off" data-width="26" style="color:#D97706"></span>
+          </div>
+          <h3 style="font-size:0.95rem;margin-bottom:6px;">No Bridge</h3>
+          <p style="font-size:0.8rem;">Donors can't find recipients efficiently</p>
+        </div>
+        <div class="glass-sm" style="padding:24px;text-align:center;">
+          <div class="icon-box icon-box-purple" style="margin:0 auto 12px;">
+            <span class="iconify" data-icon="mdi:office-building-marker-outline" data-width="26" style="color:var(--purple)"></span>
+          </div>
+          <h3 style="font-size:0.95rem;margin-bottom:6px;">NGO Struggle</h3>
+          <p style="font-size:0.8rem;">NGOs lack digital tools for food sourcing</p>
+        </div>
+        <div class="glass-sm" style="padding:24px;text-align:center;">
+          <div class="icon-box icon-box-green" style="margin:0 auto 12px;">
+            <span class="iconify" data-icon="mdi:lightbulb-on-outline" data-width="26" style="color:#059669"></span>
+          </div>
+          <h3 style="font-size:0.95rem;margin-bottom:6px;">Tech Can Help</h3>
+          <p style="font-size:0.8rem;">AI + Web can connect the dots seamlessly</p>
+        </div>
+      </div>
+      <div class="glass" style="margin-top:24px;padding:18px 24px;display:flex;align-items:center;gap:14px;">
+        <span class="iconify" data-icon="mdi:format-quote-open" data-width="28" style="color:var(--blue);opacity:0.5;"></span>
+        <p style="font-size:0.95rem;color:var(--text-mid);font-style:italic;margin:0;">If every surplus meal found a home, no one would sleep hungry.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Abstract -->
+  <div class="slide" data-slide="3">
+    <div class="bg-mesh-3"></div>
+    <div class="orb orb-2"></div>
+    <span class="slide-number">04 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:32px;">
+        <span class="tag tag-blue" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:file-document-outline" data-width="14"></span> Abstract</span>
+        <h2>At a <span class="gradient-text">Glance</span></h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:700px;">
+        <div class="glass-sm" style="padding:18px 22px;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-box icon-box-blue" style="width:44px;height:44px;border-radius:12px;">
+            <span class="iconify" data-icon="mdi:web" data-width="22" style="color:var(--blue)"></span>
+          </div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">Web-Based Platform</h3>
+            <p style="font-size:0.85rem;">A responsive donation portal for restaurants, households & event organizers to list surplus food.</p>
+          </div>
+        </div>
+        <div class="glass-sm" style="padding:18px 22px;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-box icon-box-purple" style="width:44px;height:44px;border-radius:12px;">
+            <span class="iconify" data-icon="mdi:brain" data-width="22" style="color:var(--purple)"></span>
+          </div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">AI Food Detection</h3>
+            <p style="font-size:0.85rem;">Image recognition auto-classifies food type, quantity & freshness for accurate listings.</p>
+          </div>
+        </div>
+        <div class="glass-sm" style="padding:18px 22px;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-box icon-box-green" style="width:44px;height:44px;border-radius:12px;">
+            <span class="iconify" data-icon="mdi:handshake-outline" data-width="22" style="color:#059669"></span>
+          </div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">Smart NGO Matching</h3>
+            <p style="font-size:0.85rem;">Intelligent algorithm matches donations with nearby NGOs based on need, location & capacity.</p>
+          </div>
+        </div>
+        <div class="glass-sm" style="padding:18px 22px;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-box icon-box-orange" style="width:44px;height:44px;border-radius:12px;">
+            <span class="iconify" data-icon="mdi:chart-box-outline" data-width="22" style="color:#D97706"></span>
+          </div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">Analytics Dashboard</h3>
+            <p style="font-size:0.85rem;">Real-time tracking of donations, impact metrics & NGO performance visualization.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Problem Statement -->
+  <div class="slide" data-slide="4">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <span class="slide-number">05 / 14</span>
+    <div class="slide-content stagger">
+      <div style="text-align:center;margin-bottom:40px;">
+        <span class="tag tag-red" style="margin-bottom:10px;display:inline-flex;background:rgba(252,165,165,0.15);color:#DC2626;"><span class="iconify" data-icon="mdi:alert" data-width="14"></span> Problem</span>
+        <h2>The <span style="color:#DC2626;">Broken</span> Food Chain</h2>
+      </div>
+      <div class="flow-row" style="margin-bottom:40px;">
+        <div class="flow-node glass" style="border-color:rgba(252,165,165,0.3);">
+          <div class="icon-box icon-box-red">
+            <span class="iconify" data-icon="mdi:package-variant-closed" data-width="26" style="color:#DC2626"></span>
+          </div>
+          <span>Surplus Food<br>Generated</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:arrow-right" data-width="32"></span></div>
+        <div class="flow-node glass" style="border-color:rgba(253,186,116,0.3);">
+          <div class="icon-box icon-box-orange">
+            <span class="iconify" data-icon="mdi:link-variant-off" data-width="26" style="color:#D97706"></span>
+          </div>
+          <span>No Coordination<br>Channel</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:arrow-right" data-width="32"></span></div>
+        <div class="flow-node glass" style="border-color:rgba(252,165,165,0.3);">
+          <div class="icon-box icon-box-red">
+            <span class="iconify" data-icon="mdi:trash-can" data-width="26" style="color:#DC2626"></span>
+          </div>
+          <span>Food Goes<br>to Waste</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:arrow-right" data-width="32"></span></div>
+        <div class="flow-node glass" style="border-color:rgba(252,165,165,0.3);">
+          <div class="icon-box icon-box-red">
+            <span class="iconify" data-icon="mdi:emoticon-sad-outline" data-width="26" style="color:#DC2626"></span>
+          </div>
+          <span>Hunger<br>Persists</span>
+        </div>
+      </div>
+      <div class="glass-strong" style="padding:24px 32px;text-align:center;max-width:700px;margin:0 auto;">
+        <p style="font-size:1rem;color:var(--text-dark);font-weight:500;margin:0;">
+          There is no <strong class="gradient-text">unified, intelligent platform</strong> that bridges the gap between food donors and recipients in real time.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Related Work -->
+  <div class="slide" data-slide="5">
+    <div class="bg-mesh-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-1"></div>
+    <span class="slide-number">06 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:28px;">
+        <span class="tag tag-purple" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:flask-outline" data-width="14"></span> Related Work</span>
+        <h2>Existing <span class="gradient-text">Solutions</span></h2>
+      </div>
+      <div class="three-col">
+        <div class="glass-sm" style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div class="icon-box icon-box-blue" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:food" data-width="20" style="color:var(--blue)"></span>
+            </div>
+            <h3 style="font-size:1rem;">Feeding India</h3>
+          </div>
+          <p style="font-size:0.82rem;margin-bottom:10px;">NGO-driven food rescue with volunteer network across cities.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            <span class="tag" style="background:rgba(110,231,183,0.1);color:#059669;font-size:0.65rem;">Volunteer-based</span>
+            <span class="tag" style="background:rgba(252,165,165,0.1);color:#DC2626;font-size:0.65rem;">No AI</span>
+          </div>
+        </div>
+        <div class="glass-sm" style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div class="icon-box icon-box-green" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:leaf" data-width="20" style="color:#059669"></span>
+            </div>
+            <h3 style="font-size:1rem;">OLIO</h3>
+          </div>
+          <p style="font-size:0.82rem;margin-bottom:10px;">Peer-to-peer food sharing app for neighborhoods.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            <span class="tag" style="background:rgba(110,231,183,0.1);color:#059669;font-size:0.65rem;">P2P Model</span>
+            <span class="tag" style="background:rgba(252,165,165,0.1);color:#DC2626;font-size:0.65rem;">No NGO Link</span>
+          </div>
+        </div>
+        <div class="glass-sm" style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div class="icon-box icon-box-orange" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:hand-heart-outline" data-width="20" style="color:#D97706"></span>
+            </div>
+            <h3 style="font-size:1rem;">Food Rescue US</h3>
+          </div>
+          <p style="font-size:0.82rem;margin-bottom:10px;">US-based platform connecting donors to agencies via volunteers.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            <span class="tag" style="background:rgba(110,231,183,0.1);color:#059669;font-size:0.65rem;">Good Logistics</span>
+            <span class="tag" style="background:rgba(252,165,165,0.1);color:#DC2626;font-size:0.65rem;">Region Limited</span>
+          </div>
+        </div>
+      </div>
+      <div class="glass" style="margin-top:20px;padding:16px 22px;display:flex;align-items:center;gap:12px;">
+        <span class="iconify" data-icon="mdi:information-outline" data-width="20" style="color:var(--orange);"></span>
+        <p style="font-size:0.85rem;margin:0;color:var(--text-mid);">None combine <strong>AI detection</strong> + <strong>auto-matching</strong> + <strong>dashboard analytics</strong> in one platform.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Gap Analysis -->
+  <div class="slide" data-slide="6">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-2"></div>
+    <span class="slide-number">07 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:28px;">
+        <span class="tag tag-orange" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:compare" data-width="14"></span> Gap Analysis</span>
+        <h2>FoodShare <span class="gradient-text">Fills the Gaps</span></h2>
+      </div>
+      <div class="glass-strong" style="padding:8px;overflow:hidden;">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Feeding India</th>
+              <th>OLIO</th>
+              <th>Food Rescue US</th>
+              <th style="background:linear-gradient(135deg,rgba(108,142,255,0.15),rgba(167,139,250,0.15));">FoodShare</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:500;color:var(--text-dark);">AI Food Detection</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="check highlight-row">✓</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text-dark);">Auto NGO Matching</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="check highlight-row">✓</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text-dark);">Impact Dashboard</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="check highlight-row">✓</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text-dark);">Modern UI/UX</td>
+              <td class="cross">✗</td>
+              <td class="check">✓</td>
+              <td class="check">✓</td>
+              <td class="check highlight-row">✓</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text-dark);">Image-Based Listing</td>
+              <td class="cross">✗</td>
+              <td class="check">✓</td>
+              <td class="cross">✗</td>
+              <td class="check highlight-row">✓</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text-dark);">Discovery Platform</td>
+              <td class="cross">✗</td>
+              <td class="cross">✗</td>
+              <td class="check">✓</td>
+              <td class="check highlight-row">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Literature Review -->
+  <div class="slide" data-slide="7">
+    <div class="bg-mesh-3"></div>
+    <div class="orb orb-1"></div>
+    <span class="slide-number">08 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:28px;">
+        <span class="tag tag-blue" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:book-open-page-variant-outline" data-width="14"></span> Literature Review</span>
+        <h2>Key <span class="gradient-text">References</span></h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:750px;">
+        <div class="ref-card glass-sm">
+          <span class="ref-year">2021</span>
+          <div>
+            <p style="font-weight:600;color:var(--text-dark);font-size:0.9rem;margin-bottom:3px;">Papargyropoulou et al.</p>
+            <p style="font-size:0.82rem;">"Food waste hierarchy: A systematic literature review" — Framework for prioritizing food waste prevention and redistribution strategies.</p>
+          </div>
+        </div>
+        <div class="ref-card glass-sm">
+          <span class="ref-year">2022</span>
+          <div>
+            <p style="font-weight:600;color:var(--text-dark);font-size:0.9rem;margin-bottom:3px;">Thi et al.</p>
+            <p style="font-size:0.82rem;">"Deep learning for food recognition" — CNN-based approaches for automated food classification from images with 90%+ accuracy.</p>
+          </div>
+        </div>
+        <div class="ref-card glass-sm">
+          <span class="ref-year">2023</span>
+          <div>
+            <p style="font-weight:600;color:var(--text-dark);font-size:0.9rem;margin-bottom:3px;">Sharma & Raghav</p>
+            <p style="font-size:0.82rem;">"Smart food donation systems using IoT & cloud" — Architecture for real-time food surplus monitoring and NGO coordination.</p>
+          </div>
+        </div>
+      </div>
+      <div class="glass" style="margin-top:20px;padding:14px 20px;display:flex;align-items:center;gap:10px;max-width:750px;">
+        <span class="iconify" data-icon="mdi:lightbulb-outline" data-width="18" style="color:var(--purple);"></span>
+        <p style="font-size:0.82rem;margin:0;color:var(--text-mid);">FoodShare synthesizes these insights: <strong>waste hierarchy</strong> + <strong>AI recognition</strong> + <strong>smart coordination</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: System Overview -->
+  <div class="slide" data-slide="8">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-1"></div>
+    <span class="slide-number">09 / 14</span>
+    <div class="slide-content stagger">
+      <div style="text-align:center;margin-bottom:32px;">
+        <span class="tag tag-blue" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:sitemap-outline" data-width="14"></span> Architecture</span>
+        <h2>System <span class="gradient-text">Overview</span></h2>
+      </div>
+      <div class="arch-container">
+        <div class="arch-row">
+          <div class="arch-box glass" style="border-color:rgba(108,142,255,0.3);">
+            <span class="iconify" data-icon="mdi:account-outline" data-width="22" style="color:var(--blue);margin-bottom:4px;display:block;"></span>
+            <span>Donor / User</span>
+            <small>Uploads food image</small>
+          </div>
+        </div>
+        <div class="arch-arrow-down"><span class="iconify" data-icon="mdi:arrow-down" data-width="28"></span></div>
+        <div class="arch-row">
+          <div class="arch-box glass" style="border-color:rgba(167,139,250,0.3);">
+            <span class="iconify" data-icon="mdi:brain" data-width="22" style="color:var(--purple);margin-bottom:4px;display:block;"></span>
+            <span>AI Detection Engine</span>
+            <small>Classifies food type & qty</small>
+          </div>
+        </div>
+        <div class="arch-arrow-down"><span class="iconify" data-icon="mdi:arrow-down" data-width="28"></span></div>
+        <div class="arch-row">
+          <div class="arch-box glass" style="border-color:rgba(253,186,116,0.3);">
+            <span class="iconify" data-icon="mdi:server-outline" data-width="22" style="color:#D97706;margin-bottom:4px;display:block;"></span>
+            <span>Backend Server</span>
+            <small>Stores & processes data</small>
+          </div>
+        </div>
+        <div class="arch-arrow-down"><span class="iconify" data-icon="mdi:arrow-down" data-width="28"></span></div>
+        <div class="arch-row" style="gap:20px;">
+          <div class="arch-box glass" style="border-color:rgba(110,231,183,0.3);">
+            <span class="iconify" data-icon="mdi:handshake-outline" data-width="22" style="color:#059669;margin-bottom:4px;display:block;"></span>
+            <span>NGO Matching</span>
+            <small>Auto-assigns nearby NGO</small>
+          </div>
+          <div style="width:1px;height:60px;background:rgba(108,142,255,0.1);"></div>
+          <div class="arch-box glass" style="border-color:rgba(108,142,255,0.3);">
+            <span class="iconify" data-icon="mdi:chart-box-outline" data-width="22" style="color:var(--blue);margin-bottom:4px;display:block;"></span>
+            <span>Dashboard</span>
+            <small>Analytics & tracking</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Methodology -->
+  <div class="slide" data-slide="9">
+    <div class="bg-mesh-2"></div>
+    <div class="orb orb-3"></div>
+    <span class="slide-number">10 / 14</span>
+    <div class="slide-content stagger">
+      <div style="text-align:center;margin-bottom:36px;">
+        <span class="tag tag-purple" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:cog-outline" data-width="14"></span> Methodology</span>
+        <h2>Design <span class="gradient-text">Flow</span></h2>
+      </div>
+      <div class="flow-row" style="margin-bottom:36px;">
+        <div class="flow-node glass-sm" style="position:relative;">
+          <div class="step-num">1</div>
+          <div class="icon-box icon-box-blue" style="margin-top:8px;">
+            <span class="iconify" data-icon="mdi:camera-outline" data-width="24" style="color:var(--blue)"></span>
+          </div>
+          <span>Image<br>Input</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:chevron-right" data-width="28"></span></div>
+        <div class="flow-node glass-sm" style="position:relative;">
+          <div class="step-num">2</div>
+          <div class="icon-box icon-box-purple" style="margin-top:8px;">
+            <span class="iconify" data-icon="mdi:brain" data-width="24" style="color:var(--purple)"></span>
+          </div>
+          <span>AI<br>Processing</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:chevron-right" data-width="28"></span></div>
+        <div class="flow-node glass-sm" style="position:relative;">
+          <div class="step-num">3</div>
+          <div class="icon-box icon-box-green" style="margin-top:8px;">
+            <span class="iconify" data-icon="mdi:database-outline" data-width="24" style="color:#059669"></span>
+          </div>
+          <span>Store<br>Data</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:chevron-right" data-width="28"></span></div>
+        <div class="flow-node glass-sm" style="position:relative;">
+          <div class="step-num">4</div>
+          <div class="icon-box icon-box-orange" style="margin-top:8px;">
+            <span class="iconify" data-icon="mdi:map-marker-multiple-outline" data-width="24" style="color:#D97706"></span>
+          </div>
+          <span>Match<br>NGO</span>
+        </div>
+        <div class="flow-arrow"><span class="iconify" data-icon="mdi:chevron-right" data-width="28"></span></div>
+        <div class="flow-node glass-sm" style="position:relative;">
+          <div class="step-num">5</div>
+          <div class="icon-box icon-box-pink" style="margin-top:8px;">
+            <span class="iconify" data-icon="mdi:bell-ring-outline" data-width="24" style="color:var(--pink)"></span>
+          </div>
+          <span>Notify &<br>Deliver</span>
+        </div>
+      </div>
+      <div class="three-col" style="max-width:800px;margin:0 auto;">
+        <div class="glass-sm" style="padding:16px;text-align:center;">
+          <span class="iconify" data-icon="mdi:language-python" data-width="28" style="color:var(--blue);"></span>
+          <p style="font-size:0.78rem;font-weight:600;color:var(--text-dark);margin-top:6px;">Python / Flask</p>
+          <p style="font-size:0.7rem;">Backend API</p>
+        </div>
+        <div class="glass-sm" style="padding:16px;text-align:center;">
+          <span class="iconify" data-icon="mdi:language-javascript" data-width="28" style="color:#D97706;"></span>
+          <p style="font-size:0.78rem;font-weight:600;color:var(--text-dark);margin-top:6px;">HTML/CSS/JS</p>
+          <p style="font-size:0.7rem;">Frontend UI</p>
+        </div>
+        <div class="glass-sm" style="padding:16px;text-align:center;">
+          <span class="iconify" data-icon="mdi:tensorflow" data-width="28" style="color:var(--purple);"></span>
+          <p style="font-size:0.78rem;font-weight:600;color:var(--text-dark);margin-top:6px;">TensorFlow</p>
+          <p style="font-size:0.7rem;">AI Model</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Implementation -->
+  <div class="slide" data-slide="10">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <span class="slide-number">11 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:28px;">
+        <span class="tag tag-green" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:rocket-launch-outline" data-width="14"></span> Implementation</span>
+        <h2>Real <span class="gradient-text">Workflow</span></h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:900px;">
+        <div class="glass step-card" style="text-align:left;display:flex;gap:16px;align-items:flex-start;">
+          <div style="min-width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;color:white;font-family:'Space Grotesk';font-weight:800;font-size:1.1rem;">1</div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">Upload Food Photo</h3>
+            <p style="font-size:0.8rem;">Donor captures or selects image of surplus food through web interface.</p>
+          </div>
+        </div>
+        <div class="glass step-card" style="text-align:left;display:flex;gap:16px;align-items:flex-start;">
+          <div style="min-width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--pink));display:flex;align-items:center;justify-content:center;color:white;font-family:'Space Grotesk';font-weight:800;font-size:1.1rem;">2</div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">AI Detects Food</h3>
+            <p style="font-size:0.8rem;">Model classifies food category, estimates quantity & checks freshness.</p>
+          </div>
+        </div>
+        <div class="glass step-card" style="text-align:left;display:flex;gap:16px;align-items:flex-start;">
+          <div style="min-width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--pink),var(--orange));display:flex;align-items:center;justify-content:center;color:white;font-family:'Space Grotesk';font-weight:800;font-size:1.1rem;">3</div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">Submit Donation</h3>
+            <p style="font-size:0.8rem;">User confirms AI-detected details, adds pickup location & time.</p>
+          </div>
+        </div>
+        <div class="glass step-card" style="text-align:left;display:flex;gap:16px;align-items:flex-start;">
+          <div style="min-width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--orange),var(--green));display:flex;align-items:center;justify-content:center;color:white;font-family:'Space Grotesk';font-weight:800;font-size:1.1rem;">4</div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">NGO Notified</h3>
+            <p style="font-size:0.8rem;">Nearest matched NGO receives alert with all donation details.</p>
+          </div>
+        </div>
+        <div class="glass step-card" style="text-align:left;display:flex;gap:16px;align-items:flex-start;grid-column:1/-1;max-width:calc(50% - 8px);justify-self:center;">
+          <div style="min-width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;color:white;font-family:'Space Grotesk';font-weight:800;font-size:1.1rem;">5</div>
+          <div>
+            <h3 style="font-size:0.95rem;margin-bottom:4px;">Track on Dashboard</h3>
+            <p style="font-size:0.8rem;">Admin views all donations, NGO pickups & impact metrics in real-time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Results -->
+  <div class="slide" data-slide="11">
+    <div class="bg-mesh-3"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-1"></div>
+    <span class="slide-number">12 / 14</span>
+    <div class="slide-content stagger">
+      <div style="text-align:center;margin-bottom:28px;">
+        <span class="tag tag-green" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:chart-line" data-width="14"></span> Impact</span>
+        <h2>Results & <span class="gradient-text">Challenges</span></h2>
+      </div>
+      <div class="three-col" style="margin-bottom:24px;">
+        <div class="stat-card glass-sm">
+          <div class="stat-number gradient-text">85%</div>
+          <h3 style="font-size:0.85rem;">AI Accuracy</h3>
+          <p style="font-size:0.75rem;">Food detection precision</p>
+        </div>
+        <div class="stat-card glass-sm">
+          <div class="stat-number" style="color:#059669;">100%</div>
+          <h3 style="font-size:0.85rem;">Working UI</h3>
+          <p style="font-size:0.75rem;">All features functional</p>
+        </div>
+        <div class="stat-card glass-sm">
+          <div class="stat-number" style="color:var(--purple);">5</div>
+          <h3 style="font-size:0.85rem;">Core Modules</h3>
+          <p style="font-size:0.75rem;">Upload → Detect → Match → Track → Dashboard</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px;margin:0 auto;">
+        <div class="glass-sm" style="padding:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span class="iconify" data-icon="mdi:check-circle-outline" data-width="20" style="color:#059669;"></span>
+            <h3 style="font-size:0.95rem;">Impact</h3>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot" style="background:var(--green);"></div>
+            <p style="font-size:0.82rem;">Reduces food waste at source</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot" style="background:var(--green);"></div>
+            <p style="font-size:0.82rem;">Empowers NGOs with tech tools</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot" style="background:var(--green);"></div>
+            <p style="font-size:0.82rem;">Scalable to any city/region</p>
+          </div>
+        </div>
+        <div class="glass-sm" style="padding:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span class="iconify" data-icon="mdi:alert-outline" data-width="20" style="color:#D97706;"></span>
+            <h3 style="font-size:0.95rem;">Challenges</h3>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot" style="background:var(--orange);"></div>
+            <p style="font-size:0.82rem;">AI accuracy on diverse cuisines</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot" style="background:var(--orange);"></div>
+            <p style="font-size:0.82rem;">Cloud storage & compute costs</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot" style="background:var(--orange);"></div>
+            <p style="font-size:0.82rem;">Real-world deployment & trust</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: Future Scope -->
+  <div class="slide" data-slide="12">
+    <div class="bg-mesh-2"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-1"></div>
+    <span class="slide-number">13 / 14</span>
+    <div class="slide-content stagger">
+      <div style="margin-bottom:28px;">
+        <span class="tag tag-purple" style="margin-bottom:10px;display:inline-flex;"><span class="iconify" data-icon="mdi:telescope" data-width="14"></span> Future Scope</span>
+        <h2>What's <span class="gradient-text">Next</span></h2>
+      </div>
+      <div class="split-layout">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="glass-sm" style="padding:16px 18px;display:flex;gap:12px;align-items:center;">
+            <div class="icon-box icon-box-blue" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:database" data-width="20" style="color:var(--blue)"></span>
+            </div>
+            <div>
+              <h3 style="font-size:0.9rem;">MongoDB Integration</h3>
+              <p style="font-size:0.78rem;">Scalable NoSQL database for production</p>
+            </div>
+          </div>
+          <div class="glass-sm" style="padding:16px 18px;display:flex;gap:12px;align-items:center;">
+            <div class="icon-box icon-box-green" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:map-marker-radius-outline" data-width="20" style="color:#059669"></span>
+            </div>
+            <div>
+              <h3 style="font-size:0.9rem;">Live Map Integration</h3>
+              <p style="font-size:0.78rem;">Google Maps for real-time donor-NGO proximity</p>
+            </div>
+          </div>
+          <div class="glass-sm" style="padding:16px 18px;display:flex;gap:12px;align-items:center;">
+            <div class="icon-box icon-box-orange" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:bell-badge-outline" data-width="20" style="color:#D97706"></span>
+            </div>
+            <div>
+              <h3 style="font-size:0.9rem;">Push Notifications</h3>
+              <p style="font-size:0.78rem;">Instant alerts for new donations & pickups</p>
+            </div>
+          </div>
+          <div class="glass-sm" style="padding:16px 18px;display:flex;gap:12px;align-items:center;">
+            <div class="icon-box icon-box-pink" style="width:40px;height:40px;border-radius:10px;">
+              <span class="iconify" data-icon="mdi:credit-card-outline" data-width="20" style="color:var(--pink)"></span>
+            </div>
+            <div>
+              <h3 style="font-size:0.9rem;">Payment & Logistics</h3>
+              <p style="font-size:0.78rem;">Delivery cost sharing & volunteer incentives</p>
+            </div>
+          </div>
+        </div>
+        <div class="glass-strong" style="padding:32px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+          <span class="iconify" data-icon="mdi:lightbulb-on" data-width="48" style="color:var(--blue);margin-bottom:16px;"></span>
+          <h3 style="font-size:1.3rem;margin-bottom:12px;">Conclusion</h3>
+          <p style="font-size:0.9rem;line-height:1.7;max-width:340px;">
+            FoodShare proves that <strong style="color:var(--text-dark);">technology + social empathy</strong> can create real impact. A simple web app with AI can bridge the gap between <strong style="color:var(--text-dark);">waste and need</strong>.
+          </p>
+          <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;justify-content:center;">
+            <span class="tag tag-blue">Tech for Good</span>
+            <span class="tag tag-green">Zero Hunger</span>
+            <span class="tag tag-purple">Sustainable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: Thank You -->
+  <div class="slide" data-slide="13">
+    <div class="bg-mesh"></div>
+    <div class="orb orb-1" style="width:400px;height:400px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.2;"></div>
+    <div class="orb orb-2" style="width:300px;height:300px;top:20%;left:20%;opacity:0.15;"></div>
+    <div class="orb orb-3" style="width:250px;height:250px;bottom:20%;right:20%;opacity:0.15;"></div>
+    <div class="grid-pattern"></div>
+    <span class="slide-number">14 / 14</span>
+    <div class="slide-content stagger" style="text-align:center;">
+      <div style="margin-bottom:8px;">
+        <span class="iconify" data-icon="mdi:heart" data-width="40" style="color:var(--pink);opacity:0.6;"></span>
+      </div>
+      <h1 class="thank-you-title">
+        <span class="gradient-text">Thank You</span>
+      </h1>
+      <p class="thank-you-sub" style="margin-bottom:32px;">Any Questions?</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        
+        <div class="glass-sm" style="padding:14px 24px;display:flex;align-items:center;gap:8px;">
+          <span class="iconify" data-icon="mdi:github" data-width="18" style="color:var(--text-dark);"></span>
+         <center> <span style="font-size:0.85rem;font-weight:500;color:var(--text-dark);">github.com/rajwant-raj/foodshare.git</span> </center>
+        </div>
+      </div>
+      <div style="margin-top:40px;opacity:0.4;">
+        
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" disabled onclick="navigate(-1)">
+    <span class="iconify" data-icon="mdi:chevron-left" data-width="20"></span>
+  </button>
+  <div class="progress-dots" id="progressDots"></div>
+  <span class="slide-counter" id="slideCounter">1 / 14</span>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">
+    <span class="iconify" data-icon="mdi:chevron-right" data-width="20"></span>
+  </button>
+</div>
+
+<div class="key-hint">
+  <kbd>←</kbd> <kbd>→</kbd> or click arrows to navigate
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+let isAnimating = false;
+
+// Build progress dots
+const dotsContainer = document.getElementById('progressDots');
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'progress-dot' + (i === 0 ? ' active' : '');
+  dotsContainer.appendChild(dot);
+}
+
+function updateUI() {
+  document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+  const dots = dotsContainer.querySelectorAll('.progress-dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === currentSlide);
+  });
+}
+
+function navigate(direction) {
+  if (isAnimating) return;
+  const next = currentSlide + direction;
+  if (next < 0 || next >= totalSlides) return;
+
+  isAnimating = true;
+
+  const current = slides[currentSlide];
+  const nextEl = slides[next];
+
+  // Morph out current
+  current.classList.remove('active');
+  current.classList.add(direction > 0 ? 'morph-out-left' : 'morph-out-right');
+
+  // Morph in next
+  nextEl.classList.add('active', 'morph-in');
+
+  // Reset content animations for stagger
+  const staggerEls = nextEl.querySelectorAll('.stagger > *');
+  staggerEls.forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight; // trigger reflow
+    el.style.animation = '';
+  });
+
+  setTimeout(() => {
+    current.classList.remove('morph-out-left', 'morph-out-right');
+    nextEl.classList.remove('morph-in');
+    currentSlide = next;
+    updateUI();
+    isAnimating = false;
+  }, 800);
+}
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    navigate(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    navigate(-1);
+  }
+});
+
+// Touch support
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) {
+    navigate(diff > 0 ? 1 : -1);
+  }
+});
+
+// Initial
+updateUI();
+</script>
+</body>
+</html>
