@@ -53,8 +53,6 @@ FoodShare/
 ### 🏠 Home Page
 ![Home](images/home.png)
 
-### 📊 Light Theme 
-![LightTheme](images/light_theme.png)
 
 
 
@@ -84,6 +82,14 @@ http://localhost:3000
 
 ⚠️ Note:
 GitHub Pages supports only frontend. Backend features like saving donations will not work.
+
+
+🌍 Project Report (PPTX)
+
+👉 https://rajwant-raj.github.io/FoodShareReactVersion/
+
+
+
 
 
 ---
