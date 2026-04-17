@@ -51,7 +51,14 @@ FoodShare/
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home](images/home.png)
+![Home](images/Home.png)
+
+###  Donate Page
+![Home](images/donate.png)
+
+###  Login Page
+![Home](images/login.png)
+
 
 
 
