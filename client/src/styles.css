@@ -1,0 +1,508 @@
+/* 🌐 Global */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to right, #eef2f3, #ffffff);
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* 🔝 Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+.navbar a {
+  margin: 0 10px;
+  text-decoration: none;
+  font-weight: 500;
+  color: #333;
+  transition: 0.3s;
+}
+
+.navbar a:hover {
+  color: #00c853;
+}
+
+/* 🏠 Container */
+.container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* 🎯 Hero Section */
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+}
+
+.hero p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* 🟩 Buttons */
+button {
+  background: linear-gradient(135deg, #00c853, #64dd17);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,200,83,0.3);
+}
+
+/* 🧊 Cards */
+.card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* 📦 Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+/* 📷 Images */
+.card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+/* 🔐 Auth Box */
+.auth {
+  max-width: 350px;
+  margin: 100px auto;
+  padding: 30px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.auth input {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+}
+
+.card h3 {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+/* 🔥 NAVBAR BASE */
+.navbar {
+  position: sticky;
+  top: 0;
+
+  width: 100%;
+  max-width: 1100px;
+  margin: 20px auto;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px 30px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255,255,255,0.2);
+
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+
+  z-index: 1000;
+}
+/* Scroll shrink */
+.navbar.scrolled {
+  padding: 10px 25px;
+}
+
+/* 🌈 Glow border */
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+
+  background: linear-gradient(45deg, #00c853, #00e5ff, #ff4081);
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* 🔥 Logo */
+.logo {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 🔗 Links */
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-item {
+  position: relative;
+  font-weight: 500;
+}
+
+/* 💡 Link style */
+.nav-item a {
+  text-decoration: none;
+  color: #333;
+  padding: 5px 10px;
+}
+
+/* 🟢 Active pill animation */
+.active-pill {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 200, 83, 0.2);
+  border-radius: 10px;
+  z-index: -1;
+}
+
+/* ✨ Hover glow */
+.nav-item:hover a {
+  color: #00c853;
+}
+.navbar {
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .navbar {
+    width: calc(100% - 20px);
+    padding: 12px 20px;
+  }
+}
+
+.hero-container {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+
+
+/* LOGIN SELECT PAGE */
+.login-container {
+  text-align: center;
+  padding-top: 140px;
+}
+
+.login-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+/* Cards */
+.login-card {
+  width: 200px;
+  padding: 25px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-card:hover {
+  transform: translateY(-10px);
+}
+
+/* Auth Cards */
+.auth-card {
+  max-width: 350px;
+  margin: 150px auto;
+  padding: 30px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* Inputs */
+.auth-card input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Colors */
+.green { border-top: 4px solid #00c853; }
+.blue { border-top: 4px solid #2979ff; }
+.orange { border-top: 4px solid #ff6d00; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+  gap: 20px;
+}
+
+.card h1 {
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+/* subtle edge hint */
+body::before {
+  content: "";
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0,200,83,0.2), transparent);
+  pointer-events: none;
+}
+
+/* 🔥 Loader Overlay */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+}
+
+/* ⚡ Spinner */
+.loader-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  border: 5px solid #ddd;
+  border-top: 5px solid #00c853;
+}
+
+.card h4 {
+  margin-bottom: 8px;
+}
+
+/* NGO FIND CARD */
+.ngo-find-card {
+  background: linear-gradient(135deg, #ff4081, #ff6d00);
+  padding: 20px;
+  border-radius: 15px;
+  color: white;
+  margin: 20px 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* NGO CARD */
+.ngo-card {
+  background: #1e1e2f;
+  color: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin: 15px 0;
+}
+
+.ngo-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+
+/* BUTTON */
+.action-btn {
+  background: #00c853;
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+}
+
+/* Wrapper */
+.donate-wrapper {
+  padding-top: 120px;
+  text-align: center;
+}
+
+/* Title */
+.donate-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* Card */
+.donate-card {
+  max-width: 600px;
+  margin: auto;
+  padding: 30px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Inputs */
+.donate-card input,
+.donate-card select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn.primary {
+  background: #00c853;
+  color: rgb(255, 252, 252);
+}
+
+.btn.secondary {
+  background: #de4949;
+}
+
+.btn.outline {
+  border: 1px solid #747171;
+  background: white;
+}
+
+.btn.donate {
+  background: linear-gradient(135deg, #00c853, #64dd17);
+  color: white;
+  font-weight: bold;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Preview */
+.preview {
+  width: 100%;
+  border-radius: 15px;
+}
+
+/* Video */
+.video {
+  width: 100%;
+  border-radius: 12px;
+}
+
+/* Location */
+.location {
+  font-size: 12px;
+  color: #555;
+}
+
